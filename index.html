@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<link rel="icon" href="data:," />
+<title>COD Verification Demo</title>
+<style>
+  :root{
+    --navy:#0B1F3A;
+    --navy-2:#12294a;
+    --navy-3:#1a365e;
+    --gold:#C9A227;
+    --gold-soft:#e8d48a;
+    --paper:#F7F3EC;
+    --paper-2:#fffdf8;
+    --ink:#1c2430;
+    --muted:#5b6472;
+    --line:#e3ddd0;
+    --green:#1a7f4b;
+    --green-bg:#e6f4ec;
+    --red:#b42318;
+    --red-bg:#fdecea;
+    --orange:#b54708;
+    --orange-bg:#fef3e2;
+    --blue-bg:#eaf0fa;
+    --radius:14px;
+    --shadow:0 10px 30px rgba(11,31,58,.10);
+    --shadow-sm:0 4px 14px rgba(11,31,58,.08);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:15.5px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,.display{
+    font-family:"Space Grotesk","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--navy);
+    line-height:1.15;
+    margin:0;
+    letter-spacing:-.01em;
+  }
+  p{margin:0}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:15px;color:var(--ink)}
+  a{color:var(--navy)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    background:var(--navy);
+    color:#fff;
+    position:sticky;top:0;z-index:40;
+    box-shadow:0 2px 14px rgba(11,31,58,.25);
+  }
+  .topbar-inner{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:13px 0;
+  }
+  .brand{display:flex;align-items:center;gap:11px;min-width:0}
+  .brand-mark{
+    width:38px;height:38px;flex:0 0 38px;border-radius:10px;
+    background:var(--gold);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:15px;letter-spacing:.02em;
+  }
+  .brand-name{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;letter-spacing:.01em;color:#fff}
+  .brand-sub{font-size:12px;color:#c7d2e4;line-height:1.3}
+  .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .pill{
+    display:inline-flex;align-items:center;gap:7px;
+    font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25);
+  }
+  .pill-sim{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+  .pill-sim .dot{width:7px;height:7px;border-radius:50%;background:var(--navy)}
+  .pill-ghost{color:#e8edf5}
+  .btn-reset{
+    background:transparent;color:#fff;border:1px solid rgba(255,255,255,.45);
+    padding:8px 14px;border-radius:9px;font-size:13.5px;font-weight:600;
+  }
+  .btn-reset:hover{background:rgba(255,255,255,.12)}
+
+  /* ---------- Hero strip ---------- */
+  .hero{padding:30px 0 6px}
+  .hero h1{font-size:clamp(26px,4.2vw,40px);font-weight:700;max-width:760px}
+  .hero h1 .gold{color:#9a7d14}
+  .hero p.lede{margin-top:12px;font-size:16.5px;color:var(--muted);max-width:720px}
+  .hero-steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .hero-step{
+    display:flex;align-items:center;gap:9px;background:var(--paper-2);
+    border:1px solid var(--line);border-radius:999px;padding:7px 14px 7px 8px;
+    font-size:13.5px;font-weight:600;color:var(--navy);
+  }
+  .hero-step .n{
+    width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex:0 0 24px;
+  }
+
+  /* ---------- Layout ---------- */
+  .section{padding:30px 0 4px}
+  .section-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .section-head h2{font-size:23px;font-weight:700}
+  .section-head .tag{
+    font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:#9a7d14;background:#f3e9c8;border:1px solid #e6d68f;padding:4px 10px;border-radius:999px;
+  }
+  .section-head p{width:100%;color:var(--muted);font-size:14.5px;max-width:820px}
+  .grid-2{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:start}
+
+  .card{
+    background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);
+  }
+  .card-pad{padding:20px}
+  .card-head{
+    display:flex;align-items:center;gap:10px;padding:15px 20px;border-bottom:1px solid var(--line);
+  }
+  .card-head h3{font-size:16.5px;font-weight:700}
+  .card-head .sub{font-size:12.5px;color:var(--muted);margin-left:auto;text-align:right}
+
+  /* ---------- Products ---------- */
+  .products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .product{padding:16px;display:flex;flex-direction:column;gap:7px}
+  .product .p-visual{
+    height:92px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:26px;letter-spacing:.03em;
+  }
+  .pv-1{background:linear-gradient(135deg,#0B1F3A,#24497c);color:var(--gold-soft)}
+  .pv-2{background:linear-gradient(135deg,#f0e6cd,#e2cd8d);color:var(--navy)}
+  .pv-3{background:linear-gradient(135deg,#23344d,#0B1F3A);color:#fff}
+  .product h4{font-size:15.5px}
+  .product .p-desc{font-size:13px;color:var(--muted);flex:1}
+  .product .p-price{font-family:"Space Grotesk",sans-serif;font-weight:700;color:var(--navy);font-size:16px}
+  .btn-add{
+    background:var(--navy);color:#fff;border:none;border-radius:9px;padding:9px 12px;
+    font-size:13.5px;font-weight:600;width:100%;
+  }
+  .btn-add:hover{background:var(--navy-3)}
+  .btn-add.added{background:var(--green)}
+
+  /* ---------- Cart ---------- */
+  .cart-row{
+    display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px dashed var(--line);
+  }
+  .cart-row:last-of-type{border-bottom:none}
+  .cart-row .c-name{flex:1;min-width:0}
+  .cart-row .c-name strong{display:block;font-size:14.5px;color:var(--navy)}
+  .cart-row .c-name span{font-size:12.5px;color:var(--muted)}
+  .qty{display:flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .qty button{background:#f4efe3;border:none;width:28px;height:30px;font-size:16px;font-weight:700;color:var(--navy);line-height:1}
+  .qty .qv{min-width:26px;text-align:center;font-weight:700;font-size:14px}
+  .cart-row .c-line{font-weight:700;color:var(--navy);font-size:14.5px;min-width:74px;text-align:right}
+  .cart-empty{padding:18px 0;text-align:center;color:var(--muted);font-size:14px}
+  .totals{margin-top:12px;border-top:2px solid var(--navy);padding-top:12px}
+  .totals .t-row{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);padding:2px 0}
+  .totals .t-grand{display:flex;justify-content:space-between;font-size:17px;font-weight:700;color:var(--navy);padding-top:6px;font-family:"Space Grotesk",sans-serif}
+  .free-ship{font-size:12.5px;color:var(--green);font-weight:600}
+
+  /* ---------- Form ---------- */
+  .field{margin-bottom:13px}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:5px}
+  .field label .req{color:var(--red)}
+  .field input,.field select,.field textarea{
+    width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:9px;background:#fff;outline:none;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy)}
+  .field textarea{resize:vertical;min-height:64px}
+  .field .err{display:none;color:var(--red);font-size:12.5px;margin-top:4px;font-weight:500}
+  .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--red)}
+  .field.invalid .err{display:block}
+  .field .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  .pay-box{
+    display:flex;align-items:center;gap:10px;background:var(--blue-bg);border:1px solid #cfddf2;
+    border-radius:9px;padding:11px 13px;font-size:14px;
+  }
+  .pay-box strong{color:var(--navy)}
+  .pay-box .pay-tag{margin-left:auto;background:var(--navy);color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .btn-order{
+    width:100%;background:var(--gold);color:var(--navy);border:none;border-radius:10px;
+    padding:14px;font-size:16px;font-weight:700;font-family:"Space Grotesk",sans-serif;letter-spacing:.01em;
+    box-shadow:0 6px 16px rgba(201,162,39,.35);margin-top:4px;
+  }
+  .btn-order:hover{background:#d9b234}
+  .btn-order:disabled{background:#d8d2c2;color:#8a8474;box-shadow:none;cursor:not-allowed}
+  .order-note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:9px}
+
+  /* ---------- Order status (live) ---------- */
+  .order-status-card{padding:24px}
+  .order-status-card.success{background:var(--green-bg);border:1.5px solid #a6d8bb}
+  .order-status-card.error{background:var(--red-bg);border:1.5px solid #f0b8b2}
+  .order-status-card h3{font-size:20px;margin-bottom:8px}
+  .order-status-card p{font-size:15px;color:var(--ink);max-width:720px}
+  .order-status-card .call-note{
+    margin-top:14px;background:var(--paper-2);border:1px solid var(--line);border-radius:10px;
+    padding:13px 15px;font-size:14.5px;
+  }
+  .order-status-card .call-note strong{color:var(--navy)}
+  .status-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px 18px;font-size:13.5px;margin-top:14px}
+  .status-grid .sg span{color:#5b6472;display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .status-grid .sg strong{color:var(--ink)}
+  .btn-retry{
+    margin-top:16px;background:var(--red);color:#fff;border:none;border-radius:10px;
+    padding:12px 20px;font-size:15px;font-weight:700;font-family:"Space Grotesk",sans-serif;
+  }
+  .btn-retry:hover{background:#8f1d13}
+  .btn-retry:disabled{background:#d8a49e;cursor:not-allowed}
+
+  /* ---------- Log ---------- */
+  .log-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+  th{
+    text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);
+    padding:10px 14px;border-bottom:2px solid var(--line);white-space:nowrap;
+  }
+  td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;display:inline-block}
+  .badge.verified{background:var(--green-bg);color:var(--green)}
+  .badge.cancelled{background:var(--red-bg);color:var(--red)}
+  .badge.review{background:var(--orange-bg);color:var(--orange)}
+  .log-empty{padding:22px;text-align:center;color:var(--muted);font-size:14px}
+
+  /* ---------- Order pop-up ---------- */
+  .popup-overlay{
+    position:fixed;inset:0;z-index:90;background:rgba(8,20,38,.58);
+    display:none;align-items:center;justify-content:center;padding:18px;
+  }
+  .popup-card{
+    background:var(--paper-2);border-radius:18px;max-width:430px;width:100%;
+    padding:30px 28px 26px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35);
+    border-top:5px solid var(--gold);max-height:92vh;overflow-y:auto;
+  }
+  .popup-check{
+    width:58px;height:58px;border-radius:50%;margin:0 auto 14px;
+    background:var(--green-bg);color:var(--green);border:2px solid #a6d8bb;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .popup-card h3{font-size:25px;margin-bottom:10px}
+  .popup-main{font-size:15.5px;color:var(--ink)}
+  .popup-main strong{color:var(--navy)}
+  .popup-count{margin:18px 0 6px}
+  .popup-count-num{font-family:"Space Grotesk",sans-serif;font-size:46px;font-weight:700;color:var(--navy);line-height:1}
+  .popup-count-label{font-size:13px;color:var(--muted);margin-top:5px;font-weight:600}
+  .popup-order{
+    margin-top:14px;background:var(--blue-bg);border:1px solid #cfddf2;border-radius:10px;
+    padding:11px 14px;font-size:13.5px;color:var(--navy);font-weight:600;
+  }
+  .popup-fine{font-size:13px;color:var(--muted);margin-top:14px}
+  .btn-popup{
+    margin-top:20px;width:100%;background:var(--navy);color:#fff;border:none;border-radius:10px;
+    padding:13px;font-size:15.5px;font-weight:700;font-family:"Space Grotesk",sans-serif;
+  }
+  .btn-popup:hover{background:var(--navy-3)}
+
+  footer{margin-top:44px;background:var(--navy);color:#c7d2e4}
+  .foot-inner{padding:26px 0 30px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .foot-inner .byline{font-family:"Space Grotesk",sans-serif;color:#fff;font-weight:600;font-size:15px}
+  .foot-inner .foot-note{font-size:13px;max-width:640px}
+  .foot-inner .foot-sim{margin-left:auto}
+
+  @media (max-width:960px){
+    .grid-2{grid-template-columns:1fr}
+    .products{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:600px){
+    body{font-size:15px}
+    .products{grid-template-columns:1fr}
+    .status-grid{grid-template-columns:1fr}
+    .topbar-right{margin-left:0}
+    .hero{padding-top:22px}
+    .card-pad{padding:16px}
+    .console-body{padding:15px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .wave.live span,.live-dot.on{animation:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <div>
+        <div class="brand-name">XYLEC.AI</div>
+        <div class="brand-sub">COD Confirmation Demo</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="pill pill-sim"><span class="dot"></span>Live demo</span>
+      <span class="pill pill-ghost">Voice AI</span>
+      <button class="btn-reset" id="btnResetTop" type="button">Reset demo</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <h1>Place an order. <span class="gold">Our voice agent calls you back in seconds</span> to confirm it.</h1>
+    <p class="lede">This is a working demo of the XYLEC.AI confirmation call, the same call your customers get on every cash on delivery order. Shop below like a customer, check out, and keep your phone close: our voice agent rings the number on your order, reads back what you bought and where it is going, and asks one simple question. Is this your order?</p>
+    <div class="hero-steps">
+      <span class="hero-step"><span class="n">1</span> Pick a product</span>
+      <span class="hero-step"><span class="n">2</span> Place your order</span>
+      <span class="hero-step"><span class="n">3</span> Answer the call</span>
+    </div>
+  </section>
+
+  <!-- ================= STOREFRONT + CHECKOUT ================= -->
+  <section class="section" id="storeSection">
+    <div class="section-head">
+      <h2>Shop the demo store</h2>
+      <p>Three everyday products and a normal checkout, nothing fancy. Fill it in like a real customer would, and use the mobile number of the phone in your hand, because that is the number we call to confirm your order.</p>
+    </div>
+
+    <div class="products" id="productGrid"></div>
+
+    <div class="grid-2" style="margin-top:20px">
+      <!-- Cart -->
+      <div class="card">
+        <div class="card-head">
+          <h3>Your cart</h3>
+          <span class="sub" id="cartCount">0 items</span>
+        </div>
+        <div class="card-pad" style="padding-top:8px">
+          <div id="cartRows"></div>
+          <div class="totals">
+            <div class="t-row"><span>Subtotal</span><span id="subTotal">Rs 0</span></div>
+            <div class="t-row"><span>Delivery</span><span id="shipTotal">Rs 250</span></div>
+            <div class="t-row" id="freeShipRow" style="display:none"><span class="free-ship">Free delivery applied on orders over Rs 5,000</span><span></span></div>
+            <div class="t-grand"><span>Total (COD)</span><span id="grandTotal">Rs 0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Checkout -->
+      <div class="card">
+        <div class="card-head">
+          <h3>Checkout</h3>
+          <span class="sub">Cash on delivery</span>
+        </div>
+        <div class="card-pad">
+          <form id="checkoutForm" novalidate>
+            <div class="field" id="f-name">
+              <label for="inName">Full name <span class="req">*</span></label>
+              <input id="inName" type="text" placeholder="e.g. Ahmed Raza" autocomplete="name" />
+              <div class="err">Please enter the customer name.</div>
+            </div>
+            <div class="field" id="f-phone">
+              <label for="inPhone">Mobile number <span class="req">*</span></label>
+              <input id="inPhone" type="tel" placeholder="+92 3XX XXXXXXX" autocomplete="tel" />
+              <div class="hint">We call this number to confirm your order. Use your real number in +92 format.</div>
+              <div class="err">Enter a valid Pakistani mobile number, starting with +92 or 03, 11 to 13 digits.</div>
+            </div>
+            <div class="field" id="f-city">
+              <label for="inCity">City <span class="req">*</span></label>
+              <select id="inCity">
+                <option value="">Select your city</option>
+                <option>Lahore</option>
+                <option>Karachi</option>
+                <option>Islamabad</option>
+                <option>Rawalpindi</option>
+                <option>Faisalabad</option>
+                <option>Multan</option>
+                <option>Peshawar</option>
+                <option>Quetta</option>
+                <option>Sialkot</option>
+                <option>Gujranwala</option>
+                <option>Hyderabad</option>
+                <option>Other</option>
+              </select>
+              <div class="err">Please select a city.</div>
+            </div>
+            <div class="field" id="f-address">
+              <label for="inAddress">Delivery address <span class="req">*</span></label>
+              <textarea id="inAddress" placeholder="House, street, area"></textarea>
+              <div class="err">Please enter the full delivery address. We read this back on the call.</div>
+            </div>
+            <div class="field">
+              <label>Payment method</label>
+              <div class="pay-box">
+                <strong>Cash on Delivery</strong>
+                <span style="color:var(--muted)">Pay when your order arrives.</span>
+                <span class="pay-tag">COD ONLY</span>
+              </div>
+            </div>
+            <button class="btn-order" id="btnPlaceOrder" type="submit">Place COD order</button>
+            <p class="order-note">Placing the order triggers a real call to the number above. No card, no advance payment, just cash on delivery.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ORDER STATUS ================= -->
+  <section class="section" id="orderStatusSection" style="display:none">
+    <div class="section-head">
+      <h2>Your order</h2>
+      <span class="tag">Confirmation call</span>
+    </div>
+    <div class="card order-status-card success" id="orderStatusCard">
+      <h3 id="orderStatusTitle">Order placed. Your confirmation call is coming.</h3>
+      <p id="orderStatusText">Keep the phone on your order close. Our voice agent is calling it now to confirm the order and read back the delivery address.</p>
+      <div class="call-note" id="orderCallNote"><strong>Watch your phone:</strong> <span id="orderCallNoteText">Our voice agent speaks Urdu first, reads out the order and address, and asks for a simple yes or no.</span></div>
+      <button class="btn-retry" id="btnRetryOrder" type="button" style="display:none">Retry sending this order</button>
+      <div class="status-grid" id="orderStatusGrid"></div>
+    </div>
+  </section>
+
+  <!-- ================= CALL LOG ================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2>Your orders</h2>
+      <span class="tag">This visit</span>
+      <p>Every order you place in this demo shows up here.</p>
+    </div>
+    <div class="card">
+      <div class="log-wrap">
+        <div id="logEmpty" class="log-empty">No orders yet. Place one above and watch what happens.</div>
+        <table id="logTable" style="display:none">
+          <thead>
+            <tr><th>Order</th><th>Customer</th><th>Product</th><th>Total</th><th>Status</th><th>Time</th></tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap foot-inner">
+    <div>
+      <div class="byline">Designed and built by Talha Ali Khan</div>
+      <div class="foot-note">XYLEC.AI confirms every cash on delivery order with a quick voice call before dispatch, so fake orders get caught while they are still free to cancel.</div>
+    </div>
+    <span class="pill pill-sim foot-sim"><span class="dot"></span>Live demo</span>
+  </div>
+</footer>
+
+<!-- ================= ORDER POP-UP ================= -->
+<div class="popup-overlay" id="orderPopup" role="dialog" aria-modal="true" aria-labelledby="popTitle" style="display:none">
+  <div class="popup-card">
+    <div class="popup-check" aria-hidden="true">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3 id="popTitle">Order placed!</h3>
+    <p class="popup-main">Keep your phone close. Our voice agent is calling <strong id="popPhone">your number</strong> now. Your confirmation call arrives in about <strong>10 seconds</strong>.</p>
+    <div class="popup-count">
+      <div class="popup-count-num" id="popCountNum">10</div>
+      <div class="popup-count-label" id="popCountLabel">seconds to your call</div>
+    </div>
+    <div class="popup-order" id="popOrderLine"></div>
+    <p class="popup-fine">(Relax, this order is not really placed. Nothing ships and you pay nothing. It is just a taste of the call your customers get on every cash on delivery order.)</p>
+    <button class="btn-popup" id="btnPopupClose" type="button">Got it, I am ready</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var PRODUCTS = [
+    { id:"shoes", name:"Running Shoes, Air Flex", price:4999, desc:"Lightweight knit runner with cushioned sole. The everyday bestseller.", tag:"AF" },
+    { id:"watch", name:"Smart Watch Series 5", price:8999, desc:"AMOLED display, call alerts, and a 7 day battery. Pairs with any phone.", tag:"S5" },
+    { id:"kurti", name:"Embroidered Kurti, 2 Piece", price:3450, desc:"Stitched lawn two piece with hand finished neckline embroidery.", tag:"EK" }
+  ];
+  var SHIP = 250, FREE_OVER = 5000;
+
+  var WEBHOOK_URL = "https://talhaalita777.zabexa.com/webhook/demostore";
+  var STORE_NAME = "Demo Store";
+  var cart = {}; // id -> qty
+  var currentOrder = null;
+  var lastOrder = null;
+  var lastPayload = null;
+  var sending = false;
+  var orderCounter = 1041;
+  var pendingScroll = false;
+  var popupTimer = null;
+
+  function $(id){ return document.getElementById(id); }
+  function fmt(n){ return "Rs " + n.toLocaleString("en-PK"); }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+    });
+  }
+  function normalizePhone(v){
+    var d = v.replace(/[\s\-()]/g, "");
+    if (/^03\d{9}$/.test(d)) return "+92" + d.slice(1);
+    if (/^92\d{10}$/.test(d)) return "+" + d;
+    return d;
+  }
+
+  /* ---------- Products ---------- */
+  function renderProducts(){
+    var grid = $("productGrid");
+    grid.innerHTML = "";
+    PRODUCTS.forEach(function(p, i){
+      var card = document.createElement("div");
+      card.className = "card product";
+      card.innerHTML =
+        '<div class="p-visual pv-' + (i+1) + '">' + p.tag + '</div>' +
+        '<h4>' + p.name + '</h4>' +
+        '<p class="p-desc">' + p.desc + '</p>' +
+        '<div class="p-price">' + fmt(p.price) + '</div>';
+      var btn = document.createElement("button");
+      btn.className = "btn-add"; btn.type = "button"; btn.textContent = "Add to cart";
+      btn.addEventListener("click", function(){
+        cart[p.id] = (cart[p.id] || 0) + 1;
+        renderCart();
+        btn.textContent = "Added to cart"; btn.classList.add("added");
+        setTimeout(function(){ btn.textContent = "Add to cart"; btn.classList.remove("added"); }, 1100);
+      });
+      card.appendChild(btn);
+      grid.appendChild(card);
+    });
+  }
+
+  /* ---------- Cart ---------- */
+  function cartTotals(){
+    var sub = 0, count = 0;
+    PRODUCTS.forEach(function(p){
+      var q = cart[p.id] || 0;
+      sub += p.price * q; count += q;
+    });
+    var ship = count === 0 ? 0 : (sub >= FREE_OVER ? 0 : SHIP);
+    return { sub:sub, ship:ship, total:sub + ship, count:count };
+  }
+  function renderCart(){
+    var rows = $("cartRows");
+    rows.innerHTML = "";
+    var any = false;
+    PRODUCTS.forEach(function(p){
+      var q = cart[p.id] || 0;
+      if (!q) return;
+      any = true;
+      var row = document.createElement("div");
+      row.className = "cart-row";
+      row.innerHTML =
+        '<div class="c-name"><strong>' + p.name + '</strong><span>' + fmt(p.price) + ' each</span></div>';
+      var qty = document.createElement("div");
+      qty.className = "qty";
+      var minus = document.createElement("button"); minus.type = "button"; minus.textContent = "\u2212"; minus.setAttribute("aria-label","Decrease quantity");
+      var val = document.createElement("span"); val.className = "qv"; val.textContent = q;
+      var plus = document.createElement("button"); plus.type = "button"; plus.textContent = "+"; plus.setAttribute("aria-label","Increase quantity");
+      minus.addEventListener("click", function(){ cart[p.id] = Math.max(0, q - 1); if (!cart[p.id]) delete cart[p.id]; renderCart(); });
+      plus.addEventListener("click", function(){ cart[p.id] = q + 1; renderCart(); });
+      qty.appendChild(minus); qty.appendChild(val); qty.appendChild(plus);
+      row.appendChild(qty);
+      var line = document.createElement("div");
+      line.className = "c-line"; line.textContent = fmt(p.price * q);
+      row.appendChild(line);
+      rows.appendChild(row);
+    });
+    if (!any){
+      rows.innerHTML = '<div class="cart-empty">Your cart is empty. Add a product above to start the demo.</div>';
+    }
+    var t = cartTotals();
+    $("cartCount").textContent = t.count + (t.count === 1 ? " item" : " items");
+    $("subTotal").textContent = fmt(t.sub);
+    $("shipTotal").textContent = t.count === 0 ? fmt(SHIP) : (t.ship === 0 ? "Free" : fmt(t.ship));
+    $("freeShipRow").style.display = (t.count > 0 && t.ship === 0) ? "flex" : "none";
+    $("grandTotal").textContent = fmt(t.total);
+  }
+
+  /* ---------- Validation ---------- */
+  function setInvalid(fieldId, bad){ $(fieldId).classList.toggle("invalid", bad); return !bad; }
+  function validPhone(v){
+    var d = v.replace(/[\s\-()]/g, "");
+    if (/^\+92\d{10}$/.test(d)) return true;
+    if (/^03\d{9}$/.test(d)) return true;
+    if (/^92\d{10}$/.test(d)) return true;
+    return false;
+  }
+  ["inName","inPhone","inCity","inAddress"].forEach(function(id){
+    $(id).addEventListener("input", function(){ $(id).closest(".field").classList.remove("invalid"); });
+    $(id).addEventListener("change", function(){ $(id).closest(".field").classList.remove("invalid"); });
+  });
+
+  /* ---------- Live order status ---------- */
+  function showOrderStatus(kind, order, payload){
+    var section = $("orderStatusSection");
+    var card = $("orderStatusCard");
+    section.style.display = "block";
+    card.className = "card order-status-card " + (kind === "success" ? "success" : "error");
+    $("btnRetryOrder").style.display = kind === "success" ? "none" : "inline-block";
+    if (kind === "success"){
+      $("orderStatusTitle").textContent = "Order placed. Your confirmation call is coming.";
+      $("orderStatusText").textContent = "Our voice agent is calling the number on your order now. It will read out what you ordered and the delivery address, and ask for a simple yes or no.";
+      $("orderCallNoteText").textContent = "Our voice agent calls " + payload.customer_number + ", speaks Urdu first, and confirms the order and the address. The whole call takes under a minute.";
+    } else {
+      $("orderStatusTitle").textContent = "We could not place your order.";
+      $("orderStatusText").textContent = "The order did not reach the confirmation system, so no call will come for this attempt. Check your connection and use the retry button below to send this exact order again.";
+      $("orderCallNoteText").textContent = "Nothing was charged and no call was made. Retrying sends the same order details again; you do not need to fill the form in twice.";
+    }
+    $("orderStatusGrid").innerHTML =
+      '<div class="sg"><span>Order</span><strong>' + esc(order.id) + '</strong></div>' +
+      '<div class="sg"><span>Customer</span><strong>' + esc(payload.customer_name) + '</strong></div>' +
+      '<div class="sg"><span>Phone</span><strong>' + esc(payload.customer_number) + '</strong></div>' +
+      '<div class="sg"><span>Items</span><strong>' + esc(payload.items) + '</strong></div>' +
+      '<div class="sg"><span>Amount</span><strong>Rs ' + esc(payload.amount) + '</strong></div>' +
+      '<div class="sg"><span>Address</span><strong>' + esc(payload.address) + '</strong></div>' +
+      '<div class="sg"><span>Store</span><strong>' + esc(payload.store_name) + '</strong></div>' +
+      '<div class="sg"><span>Status</span><strong>' + (kind === "success" ? "Call on its way" : "Not sent") + '</strong></div>';
+  }
+
+  function appendLog(order, payload){
+    $("logEmpty").style.display = "none";
+    $("logTable").style.display = "table";
+    var tr = document.createElement("tr");
+    var now = new Date();
+    var hh = now.getHours(), mm = now.getMinutes();
+    var timeStr = ((hh + 11) % 12 + 1) + ":" + (mm < 10 ? "0" : "") + mm + (hh >= 12 ? " PM" : " AM");
+    tr.innerHTML =
+      "<td><strong>" + esc(order.id) + "</strong></td>" +
+      "<td>" + esc(payload.customer_name) + "<br/><span style='color:var(--muted);font-size:12.5px'>" + esc(payload.customer_number) + "</span></td>" +
+      "<td>" + esc(payload.items) + "</td>" +
+      "<td>" + fmt(order.total) + "</td>" +
+      '<td><span class="badge verified">Call coming</span></td>' +
+      "<td>" + timeStr + "</td>";
+    $("logBody").appendChild(tr);
+  }
+
+  /* ---------- Place order ---------- */
+  $("checkoutForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    if (sending) return;
+    var t = cartTotals();
+    if (t.count === 0){
+      $("storeSection").scrollIntoView({ behavior:"smooth" });
+      var grid = $("productGrid");
+      grid.style.outline = "2px solid var(--red)"; grid.style.borderRadius = "12px";
+      setTimeout(function(){ grid.style.outline = "none"; }, 1600);
+      return;
+    }
+    var name = $("inName").value.trim();
+    var phoneRaw = $("inPhone").value.trim();
+    var city = $("inCity").value;
+    var address = $("inAddress").value.trim();
+    var ok = true;
+    ok = setInvalid("f-name", name.length < 2) && ok;
+    ok = setInvalid("f-phone", !validPhone(phoneRaw)) && ok;
+    ok = setInvalid("f-city", !city) && ok;
+    ok = setInvalid("f-address", address.length < 8) && ok;
+    if (!ok) return;
+
+    var phone = normalizePhone(phoneRaw);
+    var itemParts = [];
+    PRODUCTS.forEach(function(p){
+      var q = cart[p.id] || 0;
+      if (q) itemParts.push(q + " x " + p.name);
+    });
+    var items = itemParts.join(", ");
+    var fullAddress = address + ", " + city;
+    var payload = {
+      customer_name: name,
+      customer_number: phone,
+      items: items,
+      amount: String(t.total),
+      address: fullAddress,
+      store_name: STORE_NAME
+    };
+
+    orderCounter++;
+    currentOrder = {
+      id: "DEMO-" + orderCounter,
+      name: name, phone: phone, city: city, address: address,
+      productSummary: items,
+      total: t.total,
+      time: new Date()
+    };
+
+    lastOrder = currentOrder;
+    lastPayload = payload;
+    sendOrder(currentOrder, payload, $("btnPlaceOrder"));
+  });
+
+  /* ---------- Send the order (POST JSON) ---------- */
+  // The page outcome is decided only by the real fetch result: an HTTP 2xx
+  // response means the workflow accepted the order; a non-2xx response or a
+  // failed request means it did not, and the error state offers a retry.
+  function sendOrder(order, payload, triggerBtn){
+    if (sending) return;
+    sending = true;
+    var oldText = triggerBtn.textContent;
+    triggerBtn.disabled = true;
+    triggerBtn.textContent = "Sending order...";
+    function restore(){
+      sending = false;
+      triggerBtn.disabled = false;
+      triggerBtn.textContent = oldText;
+    }
+    function fail(){
+      showOrderStatus("error", order, payload);
+      $("orderStatusSection").scrollIntoView({ behavior:"smooth" });
+      restore();
+    }
+    fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(function(res){
+      if (res.ok){
+        showOrderStatus("success", order, payload);
+        appendLog(order, payload);
+        pendingScroll = true;
+        openPopup(order, payload);
+        restore();
+      } else {
+        fail();
+      }
+    }).catch(function(){
+      fail();
+    });
+  }
+
+  $("btnRetryOrder").addEventListener("click", function(){
+    if (lastOrder && lastPayload) sendOrder(lastOrder, lastPayload, this);
+  });
+
+  /* ---------- Order pop-up ---------- */
+  function openPopup(order, payload){
+    $("popPhone").textContent = payload.customer_number;
+    $("popOrderLine").textContent = "Order " + order.id + " · " + payload.items + " · " + fmt(Number(payload.amount));
+    var numEl = $("popCountNum"), lblEl = $("popCountLabel");
+    var secs = 10;
+    numEl.textContent = secs;
+    lblEl.textContent = "seconds to your call";
+    $("orderPopup").style.display = "flex";
+    document.body.style.overflow = "hidden";
+    if (popupTimer) clearInterval(popupTimer);
+    popupTimer = setInterval(function(){
+      secs--;
+      if (secs <= 0){
+        clearInterval(popupTimer); popupTimer = null;
+        numEl.textContent = "0";
+        lblEl.textContent = "Your phone should be ringing now. Pick up and say hello.";
+      } else {
+        numEl.textContent = secs;
+      }
+    }, 1000);
+  }
+  function closePopup(){
+    if (popupTimer){ clearInterval(popupTimer); popupTimer = null; }
+    $("orderPopup").style.display = "none";
+    document.body.style.overflow = "";
+    if (pendingScroll){
+      pendingScroll = false;
+      $("orderStatusSection").scrollIntoView({ behavior:"smooth" });
+    }
+  }
+  $("btnPopupClose").addEventListener("click", closePopup);
+  $("orderPopup").addEventListener("click", function(e){ if (e.target === this) closePopup(); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") closePopup(); });
+
+  /* ---------- Reset ---------- */
+  function resetDemo(){
+    pendingScroll = false;
+    closePopup();
+    cart = {}; currentOrder = null; lastOrder = null; lastPayload = null; sending = false;
+    $("btnRetryOrder").style.display = "none";
+    renderCart();
+    $("checkoutForm").reset();
+    var btn = $("btnPlaceOrder");
+    btn.disabled = false; btn.textContent = "Place COD order";
+    document.querySelectorAll(".field.invalid").forEach(function(f){ f.classList.remove("invalid"); });
+    $("orderStatusSection").style.display = "none";
+    $("orderStatusGrid").innerHTML = "";
+    $("logBody").innerHTML = "";
+    $("logTable").style.display = "none";
+    $("logEmpty").style.display = "block";
+    window.scrollTo({ top:0, behavior:"smooth" });
+  }
+
+  $("btnResetTop").addEventListener("click", resetDemo);
+
+  renderProducts();
+  renderCart();
+})();
+</script>
+</body>
+</html>
